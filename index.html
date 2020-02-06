@@ -23,6 +23,7 @@
         Vue.component(VueQrcode.name, VueQrcode);
     </script>
     <link rel="stylesheet" type="text/css" href="./css/reset.css">
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
 </head>
 <style type="text/css">
     /* add */
@@ -555,7 +556,7 @@
                     this.toast(this.curLangule['key5']);
                     return false;
                 }
-                location.href = "./collectionRecords.html?equipmentNo=" + this.rAddress;
+                location.href = "./history.html?equipmentNo=" + this.rAddress;
             },
             chooseFee() {
                 this.payNumber = this.getPayNumber();
