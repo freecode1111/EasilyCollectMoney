@@ -383,15 +383,15 @@
                         <span>{{curLangule['key3']}}{{depositCoinCode}}</span>
                     </div>
                     <div class="hang1">
-                        <span style="color:red;font-weight:bold;font-size: 14px;">{{curLangule['key4']}}{{payNumber}} {{depositCoinCode}}</span>
+                        <span style="color:red;font-weight:bold;font-size: 14px;">{{curLangule['key4']}}{{payNumber}}</span>
                     </div>
-                    <div class="hang1" v-if="depositCoinCode!=receiveCoinCode">
-                        <span>{{curLangule['key5']}}{{depositMin}} - {{depositMax}}</span>
-                    </div>
-
                     <!-- <div class="hang1" v-if="depositCoinCode!=receiveCoinCode">
-                        <span>1 {{depositCoinCode}} = {{instantRate}} {{receiveCoinCode}}</span>
+                        <span>{{curLangule['key5']}}{{depositMin}} - {{depositMax}}</span>
                     </div> -->
+
+                    <div class="hang1" v-if="depositCoinCode!=receiveCoinCode">
+                        <span>1 {{depositCoinCode}} = {{instantRate}} {{receiveCoinCode}}</span>
+                    </div>
 
                     <div class="hang1" v-if="deposit_fee&&depositCoinCode!=receiveCoinCode">
                         <span>{{curLangule['key9']}}{{deposit_fee}} {{depositCoinCode}}</span>
@@ -440,8 +440,8 @@
                 key: '法币:',
                 key1: '数字加密货币:',
                 key2: '付款方式:',
-                key3: '支付的token: ',
-                key4: '支付方支付金额：',
+                key3: '币种: ',
+                key4: '金额：',
                 key5: '支付方币种区间：',
                 key6: '扫描二维码获取地址支付',
                 key7: '服务费',
@@ -465,8 +465,8 @@
                 key: 'Fiat:',
                 key1: 'Cryptocurrency:',
                 key2: 'Pay by:',
-                key3: 'Pay token: ',
-                key4: 'Pay amount: ',
+                key3: 'Token: ',
+                key4: 'Amount: ',
                 key5: 'Pay range: ',
                 key6: 'Scan the QR code to get the address to pay',
                 key7: 'Service fee',
