@@ -528,7 +528,7 @@
                 if (baseUrl === "file://") {
                     baseUrl = 'http://dev1.elapps.net';
                 }
-                this.schemeConfig['ReturnUrl'] = baseUrl + '/payIndex1.html';
+                this.schemeConfig['ReturnUrl'] = baseUrl + '/index.html';
                 var url = "elaphant://identity?";
                 _.forEach(this.schemeConfig, function(val, key, index) {
                     if (key === 'ReturnUrl') {
