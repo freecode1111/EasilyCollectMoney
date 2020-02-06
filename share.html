@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue-clipboard.min.js"></script>
+    <script src="./js/vue-qrcode.min.js"></script>
+    <script>
+        Vue.component(VueQrcode.name, VueQrcode);
+    </script>
+    <link rel="stylesheet" type="text/css" href="./css/reset.css">
+</head>
+<style type="text/css">
+    /* add */
+    
+    body {
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, "微软雅黑";
+        background: linear-gradient(179.97deg, #31AEFF -14.27%, rgba(49, 174, 255, 0.37) 99.99%);
+    }
+    
+    html {
+        min-height: 900px;
+    }
+    
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        height: 45px;
+        line-height: 45px;
+        padding: 0 15px;
+        width: 200px;
+    }
+    
+    [v-cloak] {
+        display: none;
+    }
+    
+    .spinner {
+        display: block;
+        margin: 100px auto 0;
+        width: 150px;
+        text-align: center;
+    }
+    
+    .spinner>div {
+        width: 30px;
+        height: 30px;
+        background-color: #67CF22;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+        animation: bouncedelay 1.4s infinite ease-in-out;
+        /* Prevent first frame from flickering when animation starts */
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+    }
+    
+    .spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+    
+    .spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+    
+    @-webkit-keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            -webkit-transform: scale(0.0)
+        }
+        40% {
+            -webkit-transform: scale(1.0)
+        }
+    }
+    
+    @keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        }
+        40% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+    
+    .first {
+        position: relative;
+        width: 359px;
+        margin: 0 auto;
+        height: 40px;
+        margin-top: 60px;
+        background: #4F92D0;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+        border-radius: 5px;
+        z-index: 3;
+    }
+    
+    .second {
+        position: relative;
+        margin: 0 auto;
+        width: 359px;
+        height: 34px;
+        margin-top: -27px;
+        background: #4F92D0;
+        border-radius: 12px;
+        z-index: 1;
+    }
+    
+    .third {
+        position: relative;
+        margin: 0 auto;
+        width: 329px;
+        margin-top: -10px;
+        background: #FFFFFF;
+        border-radius: 5px;
+        z-index: 2;
+        padding: 10px 0px;
+    }
+    
+    .third .hang {
+        width: 329px;
+        height: 40px;
+        padding-top: 10px;
+    }
+    
+    .third .hang .left {
+        vertical-align: middle;
+        display: inline-block;
+        width: 150px;
+        height: 40px;
+        line-height: 40px;
+        padding-left: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        color: #666666;
+    }
+    
+    .third .hang .right {
+        display: inline-block;
+        height: 40px;
+        line-height: 40px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 13px;
+        text-align: right;
+        color: #333333;
+    }
+    
+    .third .hang .right select {
+        width: 112px;
+        height: 39px;
+        border-radius: 5px;
+        -webkit-appearance: none;
+    }
+    
+    .third .shuoming {
+        margin: 0px auto;
+        margin-top: 20px;
+        width: 297px;
+        background: #4DB8FE;
+        opacity: 0.8;
+        border-radius: 5px;
+        padding: 20px 0px;
+    }
+    
+    .third .shuoming .hang1 {
+        width: 297px;
+        height: 25px;
+        line-height: 25px;
+    }
+    
+    .third .shuoming .hang1 span {
+        margin-left: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 14px;
+        color: #333333;
+    }
+    
+    .third .shuoming .hang1 input {
+        margin-left: 15px;
+        padding-left: 10px;
+        width: 260px;
+        height: 30px;
+        border: 1px solid #666666;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+    
+    .four {
+        cursor: pointer;
+        width: 220px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .four p {
+        font-family: Bio Sans;
+        font-size: 16px;
+        margin-top: 30px;
+        width: 220px;
+        line-height: 44px;
+        height: 44px;
+        background: #31ACFC;
+        border-radius: 200px;
+        color: #FFFFFF;
+    }
+    
+    .five {
+        text-align: center;
+        position: relative;
+        width: 329px;
+        height: 152px;
+        margin: 0 auto;
+        margin-top: 30px;
+        background: #FFFFFF;
+        border-radius: 5px;
+    }
+    
+    .five p {
+        cursor: pointer;
+        position: absolute;
+        left: 16px;
+        top: 27px;
+        width: 297px;
+        height: 48px;
+        line-height: 48px;
+        margin: 0 auto;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: center;
+        color: #FFFFFF;
+    }
+    
+    .six {
+        text-align: center;
+        position: relative;
+        width: 329px;
+        height: 98px;
+        margin: 0 auto;
+        margin-top: 30px;
+        background: #FFFFFF;
+        border-radius: 5px;
+    }
+    
+    .six p {
+        cursor: pointer;
+        position: absolute;
+        left: 16px;
+        top: 27px;
+        width: 297px;
+        height: 48px;
+        line-height: 48px;
+        margin: 0 auto;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: center;
+        color: #FFFFFF;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+
+        <div class="spinner" v-if="loading">
+
+            <div class="bounce1"></div>
+
+            <div class="bounce2"></div>
+
+            <div class="bounce3"></div>
+        </div>
+
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+        <div v-if="!loading">
+            <div class="first"></div>
+            <div class="second"></div>
+            <div class="third">
+                <div class="hang">
+                    <span class="left">{{curLangule['key']}}</span><span class="right">{{wbNumber}} {{wd}}</span>
+                </div>
+
+                <div class="hang" v-if="ffee">
+                    <span class="left">{{curLangule['key6']}}</span><span class="right"> {{ffee}}%</span>
+                </div>
+
+                <div class="hang">
+                    <span class="left">{{rcoin}}:</span><span class="right"> {{shouNumber}}</span>
+                </div>
+
+
+                <div class="shuoming">
+                    <div style="width: 200px;margin: 0 auto;text-align: center;" v-if="pAddress">
+                        <qrcode :value="qrCode" :options="{ width:200 }" style="display:block"></qrcode>
+                    </div>
+
+                    <div style="text-align: center;margin-top: 15px;">{{curLangule['key4']}}</div>
+
+                </div>
+            </div>
+
+            <div class="five">
+                <p @click="share">{{curLangule['key15']}}</p>
+                <p @click="back" style="top:85px;">{{curLangule['key14']}}</p>
+            </div>
+            <div style="height:50px"></div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: false,
+            zh: {
+                key: '法币:',
+                key1: '数字加密货币:',
+                key4: '扫描二维码支付',
+                key5: '复制成功',
+                key6: '服务费: ',
+                key14: '返回主页',
+                key15: '分享支付'
+            },
+            en: {
+                key: 'Fiat:',
+                key1: 'Cryptocurrency:',
+                key4: 'Scan QR code payment',
+                key5: 'Copy successful',
+                key6: 'Service fee: ',
+                key14: 'Back',
+                key15: 'Sharing Payment'
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            toastShow: false,
+            toastText: '',
+            wd: 'USD',
+            priceObj: {},
+            rAddress: '',
+            payNumber: "",
+            feeNumber: '',
+            wbNumber: '',
+            rcoin: '',
+            pAddress: '',
+            ffee: "",
+            shouNumber: "",
+            frameType: "",
+            qrCode: ''
+        },
+        methods: {
+            share() {
+                this.doCopy(this.qrCode);
+            },
+            back() {
+                if (this.frameType != "") {
+                    location.href = "./index.html?browser=" + this.frameType;
+                } else {
+                    let dataStr = localStorage.getItem('dataStr');
+                    location.href = "./index.html?Data=" + dataStr;
+                }
+            },
+            doCopy(text) {
+                var v = this;
+                this.$copyText(text).then(function(e) {
+                    v.toast(v.curLangule['key5']);
+                }, function(e) {})
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            },
+            getUrl() {
+                //获取主机地址
+                var localhostPaht = window.location.protocol + "//" + window.location.host;
+                return localhostPaht;
+            }
+        },
+        created() {
+            this.getLanugle();
+            let objstr = localStorage.getItem("frameTypeObj") || "";
+            if (objstr != "") {
+                this.frameType = JSON.parse(objstr)["frameType"];
+            } else {
+                this.frameType = "";
+            }
+        },
+        mounted() {
+            let itemStr = localStorage.getItem("payObj") || "";
+            if (itemStr != "") {
+                let item = JSON.parse(itemStr);
+                this.wd = item['wd'];
+                this.ffee = item['ffee'] || '';
+                this.wbNumber = item['wbNumber'];
+                this.shouNumber = item['payNumber'];
+                this.payNumber = item['payNumber'];
+                this.rAddress = item['rAddress'];
+                this.pAddress = this.rAddress;
+                this.rcoin = item['rcoin'];
+            }
+
+            let baseUrl = this.getUrl();
+            if (baseUrl === "file://") {
+                baseUrl = 'http://dev1.elapps.net';
+            }
+            if (this.ffee != "") {
+                this.qrCode = baseUrl + "/pay.html?wd=" + this.wd + '&wbNumber=' + this.wbNumber + '&ffee=' + this.feeNumber + "&payNumber=" + this.payNumber + '&rAddress=' + this.rAddress + '&rcoin=' + this.rcoin + '&browser=' + this.frameType;
+            } else {
+                this.qrCode = baseUrl + "/pay.html?wd=" + this.wd + '&wbNumber=' + this.wbNumber + "&payNumber=" + this.payNumber + '&rAddress=' + this.rAddress + '&rcoin=' + this.rcoin + '&browser=' + this.frameType;
+            }
+        }
+    });
+</script>
+
+</html>

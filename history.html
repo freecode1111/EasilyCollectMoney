@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue-clipboard.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/reset.css">
+    <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
+</head>
+<style type="text/css">
+    body {
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, "微软雅黑";
+        background-color: #ffffffff;
+    }
+    
+    html {
+        height: 100%;
+    }
+    
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        height: 45px;
+        line-height: 45px;
+        padding: 0 15px;
+        width: 200px;
+    }
+    
+    [v-cloak] {
+        display: none;
+    }
+    
+    .spinner {
+        display: block;
+        margin: 100px auto 0;
+        width: 150px;
+        text-align: center;
+    }
+    
+    .spinner>div {
+        width: 30px;
+        height: 30px;
+        background-color: #67CF22;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+        animation: bouncedelay 1.4s infinite ease-in-out;
+        /* Prevent first frame from flickering when animation starts */
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+    }
+    
+    .spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+    
+    .spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+    
+    @-webkit-keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            -webkit-transform: scale(0.0)
+        }
+        40% {
+            -webkit-transform: scale(1.0)
+        }
+    }
+    
+    @keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        }
+        40% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+    
+    .hang {
+        margin-top: 20px;
+        /* line-height: 64px; */
+        background: #FFFFFF;
+        border-top: 1px solid #BDDBFF;
+        border-left: 1px solid #BDDBFF;
+        border-right: 1px solid #BDDBFF;
+        border-bottom: 1px solid #BDDBFF;
+        box-sizing: border-box;
+        border-radius: 5px;
+        padding: 10px 0px;
+        height: 128px;
+    }
+    
+    .hang1 {
+        padding: 15px 0px;
+        word-wrap: break-word;
+        overflow: auto;
+        text-align: center;
+        vertical-align: middle!important;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+
+        <div class="spinner" v-if="loading">
+
+            <div class="bounce1"></div>
+
+            <div class="bounce2"></div>
+
+            <div class="bounce3"></div>
+        </div>
+
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+        <div v-if="allArr.length===0&&!loading" style="text-align: center;margin-top: 150px;font-size: 15px">{{curLangule['key9']}}</div>
+        <div v-if="!loading&&allArr.length>0">
+            <div class="container">
+                <div class="row hang center-vertical" v-for="(item) in allArr">
+                    <div class="col-xs-4 hang1">
+                        <p>{{item.fromCoinCode}} {{item.fromCoinAmt}}</p>
+                        <p>||</p>
+                        <p>{{item.toCoinCode}} {{item.toCoinAmt}}</p>
+                    </div>
+                    <div class="col-xs-4 hang1" @click="doCopy(item.orderId)">{{item.orderId}}</div>
+                    <div class="col-xs-2 hang1" v-if="item.tradeState === 'timeout' || item.tradeState === 'wait_deposits' || item.tradeState === 'complete' || item.tradeState === 'wait_refund' || item.tradeState === 'refund_complete' " style="color: #000;" @click='clickItem(item)'>{{handleStatus(item.tradeState)}}</div>
+                    <div class="col-xs-2 hang1" v-if="item.tradeState === 'exchange'" style="color: #ff1515;">{{handleStatus(item.tradeState)}}</div>
+                    <div class="col-xs-2 hang1">{{item.beginDate}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                "status_exchangeing": "兑换中",
+                "status_timeout": "超时",
+                "status_refunding": "兑换失败，退币中...",
+                "status_refund_completed": "退币完成",
+                "wait_deposits": "待存币",
+                "receive_complete": "兑换完成",
+                "wait_refund_sending": "退币中...",
+                "refund_complete": "退币完成",
+                key9: '没有交易记录',
+                key10: '复制成功',
+            },
+            en: {
+                "status_exchangeing": "Exchange in progress",
+                "status_timeout": "Timeout",
+                "status_refunding": "Failed to exchange, refund in progress....",
+                "status_refund_completed": "Refunded",
+                "wait_deposits": "To be deposited",
+                "receive_complete": "Exchanged successfully",
+                "wait_refund_sending": "Refund in progress....",
+                "refund_complete": "Refunded successfully",
+                key9: 'No transaction history',
+                key10: 'Copy successful',
+
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            toastShow: false,
+            toastText: '',
+            baseUrl: 'https://transfer.swft.pro/',
+            exartParms: {
+                "equipmentNo": "",
+                "sourceType": "H5",
+                "userNo": "",
+                "sessionUuid": "",
+                "pageNo": 1,
+                "pageSize": 200,
+                "changeType": "advanced",
+                "flag": "0"
+            },
+            allArr: []
+        },
+        methods: {
+            dateStrChangeTimeTamp(dateStr) {
+                dateStr = dateStr.substring(0, 19);
+                dateStr = dateStr.replace(/-/g, '/');
+                return timeTamp = new Date(dateStr).getTime();
+            },
+            handleStatus(status) {
+                let key = "";
+                switch (status) {
+                    case 'timeout':
+                        key = 'status_timeout'; // "#000";
+                        break;
+                    case 'wait_deposits':
+                        key = 'wait_deposits'; //"#000";
+                        break;
+                    case 'exchange':
+                        key = "status_exchangeing"; //#ff1515
+                        break;
+                    case 'complete':
+                        key = "receive_complete"; //#000
+                        break;
+                    case 'wait_refund':
+                        key = "wait_refund_sending"; //#000
+                        break;
+                    case 'refund_complete':
+                        key = "refund_complete"; //#000
+                        break;
+                }
+                return this.curLangule[key];
+            },
+            doCopy(text) {
+                var v = this;
+                this.$copyText(text).then(function(e) {
+                    v.toast(v.curLangule['key10']);
+                }, function(e) {})
+            },
+            postAjax(url, obj) {
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        data: JSON.stringify(obj),
+                        type: 'POST',
+                        contentType: "application/json",
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+                });
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            }
+        },
+        created() {
+            this.getLanugle();
+            this.exartParms["equipmentNo"] = this.GetQueryString('equipmentNo');
+            let url = this.baseUrl + '/api/v2/ios/queryAllTradeV3';
+            this.postAjax(url, this.exartParms).then((res) => {
+                if (res['resCode'] === '800') {
+                    let data = res['data'];
+                    let pageContent = data['pageContent'];
+                    this.allArr = pageContent['activeOrders'].concat(pageContent['completeOrders']);
+                    this.allArr = _.sortBy(this.allArr, (item) => {
+                        return -this.dateStrChangeTimeTamp(item["beginDate"]);
+                    });
+                    this.loading = false;
+                } else {
+                    this.loading = false;
+                    this.allArr = [];
+                }
+            }).catch(() => {
+                this.loading = false;
+                this.allArr = [];
+            });
+        }
+    });
+</script>
+
+</html>

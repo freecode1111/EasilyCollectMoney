@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <script src="./js/vue.min.js"></script>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/lodash.min.js"></script>
+    <script src="./js/vue-clipboard.min.js"></script>
+    <script src="./js/wallet-address-validator.min.js"></script>
+    <script>
+        Vue.prototype.$wAValidator = WAValidator;
+    </script>
+    <script src="./js/vue-qrcode.min.js"></script>
+    <script>
+        Vue.component(VueQrcode.name, VueQrcode);
+    </script>
+    <link rel="stylesheet" type="text/css" href="./css/reset.css">
+</head>
+<style type="text/css">
+    /* add */
+    
+    body {
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, "微软雅黑";
+        background: linear-gradient(179.97deg, #31AEFF -14.27%, rgba(49, 174, 255, 0.37) 99.99%);
+    }
+    
+    html {
+        min-height: 900px;
+    }
+    
+    .toast {
+        position: fixed;
+        z-index: 2000;
+        left: 50%;
+        top: 25%;
+        transition: all .5s;
+        -webkit-transform: translateX(-50%) translateY(-50%);
+        -moz-transform: translateX(-50%) translateY(-50%);
+        -ms-transform: translateX(-50%) translateY(-50%);
+        -o-transform: translateX(-50%) translateY(-50%);
+        transform: translateX(-50%) translateY(-50%);
+        text-align: center;
+        border-radius: 5px;
+        color: #FFF;
+        background: rgba(17, 17, 17, 0.7);
+        /* height: 45px; */
+        width: 100%;
+        overflow: auto;
+        padding: 5px 0px;
+    }
+    
+    [v-cloak] {
+        display: none;
+    }
+    
+    .spinner {
+        display: block;
+        margin: 100px auto 0;
+        width: 150px;
+        text-align: center;
+    }
+    
+    .spinner>div {
+        width: 30px;
+        height: 30px;
+        background-color: #67CF22;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+        animation: bouncedelay 1.4s infinite ease-in-out;
+        /* Prevent first frame from flickering when animation starts */
+        -webkit-animation-fill-mode: both;
+        animation-fill-mode: both;
+    }
+    
+    .spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+    
+    .spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+    
+    @-webkit-keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            -webkit-transform: scale(0.0)
+        }
+        40% {
+            -webkit-transform: scale(1.0)
+        }
+    }
+    
+    @keyframes bouncedelay {
+        0%,
+        80%,
+        100% {
+            transform: scale(0.0);
+            -webkit-transform: scale(0.0);
+        }
+        40% {
+            transform: scale(1.0);
+            -webkit-transform: scale(1.0);
+        }
+    }
+    
+    .first {
+        position: relative;
+        width: 359px;
+        margin: 0 auto;
+        height: 40px;
+        margin-top: 60px;
+        background: #4F92D0;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.25);
+        border-radius: 5px;
+        z-index: 3;
+    }
+    
+    .second {
+        position: relative;
+        margin: 0 auto;
+        width: 359px;
+        height: 34px;
+        margin-top: -27px;
+        background: #4F92D0;
+        border-radius: 12px;
+        z-index: 1;
+    }
+    
+    .third {
+        position: relative;
+        margin: 0 auto;
+        width: 329px;
+        /* height: 408px; */
+        margin-top: -10px;
+        background: #FFFFFF;
+        border-radius: 5px;
+        z-index: 2;
+        padding: 10px 0px;
+    }
+    
+    .third .hang {
+        width: 329px;
+        height: 40px;
+        padding-top: 10px;
+    }
+    
+    .third .hang .left {
+        vertical-align: middle;
+        display: inline-block;
+        width: 150px;
+        height: 40px;
+        line-height: 40px;
+        padding-left: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 11px;
+        color: #666666;
+    }
+    
+    .third .hang .right {
+        display: inline-block;
+        /* width: 150px; */
+        height: 40px;
+        line-height: 40px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 11px;
+        text-align: right;
+        color: #333333;
+    }
+    
+    .third .hang .right select {
+        width: 112px;
+        height: 39px;
+        border-radius: 5px;
+        -webkit-appearance: none;
+    }
+    
+    .third .shuoming {
+        margin: 0px auto;
+        margin-top: 20px;
+        width: 310px;
+        /* height: 116px; */
+        background: #4DB8FE;
+        opacity: 0.7;
+        border-radius: 5px;
+        padding: 20px 0px;
+    }
+    
+    .third .shuoming .hang1 {
+        width: 310px;
+        height: 25px;
+        line-height: 25px;
+    }
+    
+    .third .shuoming .hang1 span {
+        margin-left: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 11px;
+        color: #333333;
+    }
+    
+    .third .shuoming .hang2 {
+        width: 297px;
+        height: 25px;
+    }
+    
+    .third .shuoming .hang2 span {
+        margin-left: 10px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 11px;
+        color: #333333;
+    }
+    
+    .third .shuoming .hang1 input {
+        margin-left: 15px;
+        padding-left: 10px;
+        width: 260px;
+        height: 30px;
+        border: 1px solid #666666;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+    
+    .four {
+        cursor: pointer;
+        width: 220px;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .four p {
+        font-family: Bio Sans;
+        font-size: 16px;
+        margin-top: 30px;
+        width: 220px;
+        line-height: 44px;
+        height: 44px;
+        /* background: #31ACFC; */
+        background: #ffffff;
+        border-radius: 200px;
+        /* color: #FFFFFF; */
+        color: #333333;
+    }
+    
+    .five {
+        text-align: center;
+        position: relative;
+        width: 329px;
+        height: 124px;
+        margin: 0 auto;
+        margin-top: 30px;
+        background: #FFFFFF;
+        border-radius: 5px;
+    }
+    
+    .five p {
+        cursor: pointer;
+        position: absolute;
+        left: 16px;
+        top: 10px;
+        width: 297px;
+        height: 48px;
+        line-height: 48px;
+        margin: 0 auto;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: center;
+        color: #FFFFFF;
+    }
+    
+    .five1 {
+        text-align: center;
+        position: relative;
+        width: 329px;
+        height: 98px;
+        margin: 0 auto;
+        margin-top: 30px;
+        background: #FFFFFF;
+        border-radius: 5px;
+    }
+    
+    .five1 p {
+        cursor: pointer;
+        position: absolute;
+        left: 16px;
+        top: 27px;
+        width: 297px;
+        height: 48px;
+        line-height: 48px;
+        margin: 0 auto;
+        background: #31ACFC;
+        box-shadow: 0px 4px 8px #90ADC0;
+        border-radius: 200px;
+        font-family: Bio Sans;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        text-align: center;
+        color: #FFFFFF;
+    }
+    
+    .five .grap {
+        background: #dddddd;
+        box-shadow: 0px 4px 8px #dddddd;
+        color: #333333;
+    }
+    
+    .five1 .grap {
+        background: #dddddd;
+        box-shadow: 0px 4px 8px #dddddd;
+        color: #333333;
+    }
+</style>
+
+<body>
+    <div id="app" v-cloak>
+
+        <div class="spinner" v-if="loading">
+
+            <div class="bounce1"></div>
+
+            <div class="bounce2"></div>
+
+            <div class="bounce3"></div>
+        </div>
+
+        <div class="toast" v-show="toastShow">
+            {{toastText}}
+        </div>
+        <div v-if="!loading">
+            <div class="first"></div>
+            <div class="second"></div>
+            <div class="third">
+                <div class="hang">
+                    <span class="left">{{curLangule['key']}}</span><span class="right">{{wbNumebr}} {{wd}}</span>
+                </div>
+
+                <div class="hang" v-if="ffee">
+                    <span class="left">{{curLangule['key7']}}</span><span class="right"> {{ffee}}</span>
+                </div>
+
+                <div class="hang">
+                    <span class="left">{{rcoin}}:</span><span class="right"> {{shouNumber}}</span>
+                </div>
+
+                <div class="hang">
+                    <span class="left">{{curLangule['key2']}}</span><span class="right">
+                        <select v-model="selectCoin" @change="chooseCoin" style=" background: url('./images/arrow-ios-downward-white.png') no-repeat right center;background-color: #31ACFC;color: #ffffff;">
+                                <option :value ="key" v-for="(item,key) in codes">{{item.name}}</option>
+                        </select></span>
+                </div>
+
+                <div class="shuoming">
+                    <div class="hang1">
+                        <span>{{curLangule['key3']}}{{depositCoinCode}}</span>
+                    </div>
+                    <div class="hang1">
+                        <span style="color:red;font-weight:bold;font-size: 14px;">{{curLangule['key4']}}{{payNumber}} {{depositCoinCode}}</span>
+                    </div>
+                    <div class="hang1" v-if="depositCoinCode!=receiveCoinCode">
+                        <span>{{curLangule['key5']}}{{depositMin}} - {{depositMax}}</span>
+                    </div>
+
+                    <div class="hang1" v-if="depositCoinCode!=receiveCoinCode">
+                        <span>1 {{depositCoinCode}} = {{instantRate}} {{receiveCoinCode}}</span>
+                    </div>
+
+                    <div class="hang1" v-if="deposit_fee&&depositCoinCode!=receiveCoinCode">
+                        <span>{{curLangule['key9']}}{{deposit_fee}} {{depositCoinCode}}</span>
+                    </div>
+                    <div class="hang1">
+                        <input v-model="refundAddr" :placeholder="curLangule['key11']" v-if="depositCoinCode!=receiveCoinCode" />
+                    </div>
+                    <div class="hang1" v-if="depositCoinCode!=receiveCoinCode&&orderId" style="margin-top: 5px;overflow:auto;">
+                        <span @click="doCopy(orderId)">{{curLangule['key12']}}{{orderId}}</span>
+                    </div>
+
+                    <div class="hang1" v-if="depositCoinCode!=receiveCoinCode&&orderState">
+                        <span>{{curLangule['key13']}}{{orderState}}</span>
+                    </div>
+
+                    <div style="width: 200px;margin: 0 auto;text-align: center;" v-if="pAddress">
+                        <qrcode :value="pAddress" :options="{ width:200 }" style="display:block"></qrcode>
+                        <p style="margin-top: 5px;font-size: 14px;">{{curLangule['key6']}}</p>
+                    </div>
+
+                    <div class="four" @click="createWallet" v-if="!pAddress">
+                        <p>{{curLangule['key10']}}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="five" v-if="this.selectCoin ==='ELA'">
+                <p @click="payElephant" :class="{'grap':!pAddress}">{{curLangule['key16']}}</p>
+                <p @click="payTrinty" style="margin-top:55px;" :class="{'grap':!pAddress}">{{curLangule['key17']}}</p>
+            </div>
+
+            <div class="five1" v-if="this.selectCoin !='ELA'">
+                <p @click="payElephant" :class="{'grap':!pAddress}">{{curLangule['key16']}}</p>
+            </div>
+
+            <div style="height:50px"></div>
+        </div>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            loading: true,
+            zh: {
+                key: '法币:',
+                key1: '数字加密货币:',
+                key2: '付款方式:',
+                key3: '支付的token: ',
+                key4: '支付方支付金额：',
+                key5: '支付方币种区间：',
+                key6: '扫描二维码获取地址支付',
+                key7: '服务费',
+                key8: '兑换的价格：',
+                key9: '支付的手续费：',
+                key10: '获取充币地址',
+                key11: '输入选中支付币种的退款地址',
+                key12: '订单ID: ',
+                key13: '订单状态： ',
+                key14: '返回主页',
+                key15: '复制成功',
+                key16: '去大象支付',
+                key17: '去Trinity支付',
+                key18: '交易暂时不支持',
+                key19: '金额太小',
+                key20: '金额太大',
+                error1: '地址不合法',
+                error2: '稍后重试',
+            },
+            en: {
+                key: 'Fiat:',
+                key1: 'Cryptocurrency:',
+                key2: 'Pay by:',
+                key3: 'Pay token: ',
+                key4: 'Pay amount: ',
+                key5: 'Pay range: ',
+                key6: 'Scan the QR code to get the address to pay',
+                key7: 'Service fee',
+                key8: 'Exchange rate： ',
+                key9: 'Pay fee: ',
+                key10: 'Get the deposit address',
+                key11: 'Enter the refund address',
+                key12: 'OrderID: ',
+                key13: 'OrderState: ',
+                key14: 'Back Page',
+                key15: 'Copy successful',
+                key16: 'Pay with Elephant',
+                key17: 'Pay with Trinity',
+                key18: 'The transaction is not currently supported',
+                key19: 'The amount is too small',
+                key20: 'The amount is too large',
+                error1: 'Illegal address',
+                error2: 'Try again later',
+            },
+            curLangule: {},
+            curLanguleKey: 'zh',
+            toastShow: false,
+            toastText: '',
+            codes: {},
+            wdArr: {
+                USD: {
+                    name: 'key1'
+                },
+                CNY: {
+                    name: 'key'
+                }
+            },
+            wd: 'USD',
+            coinNumber: "",
+            priceObj: {},
+            rAddress: '',
+            payNumber: "",
+            feeNumber: '',
+            wbNumebr: '',
+            rcoin: '',
+            exartParms: {
+                "equipmentNo": "",
+                "sourceType": "H5",
+                "userNo": "",
+                "sessionUuid": "",
+            },
+            baseUrl: 'https://transfer.swft.pro/',
+            depositCoinCode: '', //存款
+            receiveCoinCode: '', //接收
+            depositMax: '', //支付币种最大的数量
+            depositMin: '', //支付币种最小的数量
+            tAddress: '', //退款地址
+            deposit_fee: '',
+            instantRate: '',
+            allCoinObj: {},
+            sTimer: "",
+            orderId: '',
+            refundAddr: '',
+            orderState: '',
+            sTime1: '',
+            pAddress: '',
+            ffee: "",
+            shouNumber: "",
+            frameType: "",
+            selectCoin: "",
+            schemeConfig: {
+                "AppID": "05af9754b5866c2dff13a6c95dffd63be4dbd59649ecc333df2006937895f33f1771e67710ddfc974be0152b38ed3b1ee8df30fe1b84979f923281021eff9397",
+                "AppName": encodeURIComponent("Easily Collect Money"),
+                "DID": "ibxNTG1hBPK1rZuoc8fMy4eFQ96UYDAQ4J",
+                "PublicKey": "034c51ddc0844ff11397cc773a5b7d94d5eed05e7006fb229cf965b47f19d27c55",
+                "CoinName": "",
+                "Amount": "",
+                "ReceivingAddress": ""
+            },
+            swft_fee: '',
+        },
+        methods: {
+            isAddressValid(address) {
+                var r = false;
+                if (address.length != 34) {
+                    return r
+                }
+
+                r = (address[0] == 'E' || address[0] == 'i' ||
+                    address[0] == '8' || address[0] == 'X' || address[0] == 'D')
+
+                if (r == false && address === "1111111111111111111114oLvT2") {
+                    r = true;
+                }
+
+                return r;
+            },
+            getUrl() {
+                //获取主机地址
+                var localhostPaht = window.location.protocol + "//" + window.location.host;
+                return localhostPaht;
+            },
+            payElephant() {
+                if (this.pAddress === '') {
+                    return;
+                }
+                if (this.selectCoin === 'USDT(ERC20)') {
+                    this.schemeConfig['CoinName'] = 'USDT-ERC20';
+                } else {
+                    this.schemeConfig['CoinName'] = this.selectCoin;
+                }
+                this.schemeConfig['ReceivingAddress'] = this.pAddress;
+                this.schemeConfig['Amount'] = this.payNumber;
+                var baseUrl = this.getUrl();
+                if (baseUrl === "file://") {
+                    baseUrl = 'http://dev1.elapps.net';
+                }
+                var url = "elaphant://elapay?";
+                _.forEach(this.schemeConfig, function(val, key, index) {
+                    if (key === 'ReturnUrl' || key === 'RequestInfo' || key === 'RequestedContent') {
+                        val = encodeURIComponent(val);
+                    }
+                    url += key + '=' + val + '&';
+                });
+                var turl = 'https://launch.elaphant.app/?appName=Easily Collect Money&autoRedirect=True&appTitle=Easily Collect Money&redirectURL=' + encodeURIComponent(url);
+                location.href = turl;
+            },
+            payTrinty() {
+                if (this.pAddress === '') {
+                    return;
+                }
+                let url = "elastos://pay?receiver=" + this.pAddress + "&amount=" + this.payNumber + "&memo=''" + "&callbackurl=''";
+                location.href = url;
+            },
+            orderList(orderId) {
+                let url = this.baseUrl + '/api/v2/ios/queryAllTradeV3';
+                let obj = _.cloneDeep(this.exartParms);
+                obj.changeType = 'advanced';
+                obj.depositCoinCode = this.depositCoinCode;
+                obj.receiveCoinCode = this.receiveCoinCode;
+                obj.flag = "0"
+                obj.pageNo = 1
+                obj.pageSize = 200;
+                this.postAjax(url, obj).then((res) => {
+                    if (res.resCode === '800') {
+                        let data = res.data["pageContent"] || {};
+                        let activeOrders = data['activeOrders'] || [];
+                        let completeOrders = data['completeOrders'] || [];
+                        let allArr = activeOrders.concat(completeOrders);
+                        let obj = _.keyBy(allArr, 'orderId');
+                        this.orderState = this.obj[orderId]['tradeState'];
+                        if (this.orderState = "timeout" || this.orderState == "orderComplete") {
+                            clearInterval(this.sTime1);
+                        }
+                    }
+
+                }).catch(() => {
+
+                });
+            },
+            getCoinList() {
+                let url = this.baseUrl + 'api/v1/queryCoinList';
+                var obj = {};
+                this.postAjax(url, obj).then((res) => {
+
+                    if (res.resCode === '800') {
+                        let data = res.data;
+                        if (data.length > 0) {
+                            this.allCoinObj = _.keyBy(data, 'coinCode');
+                        }
+                    }
+                    this.loading = false;
+                }).catch(() => {
+                    this.loading = false;
+                });
+            },
+            accountExchange() {
+                let url = this.baseUrl + 'api/v2/accountExchange';
+                let obj = _.cloneDeep(this.exartParms);
+                obj.depositCoinCode = this.depositCoinCode;
+                obj.receiveCoinCode = this.receiveCoinCode;
+                obj.depositCoinAmt = this.payNumber; // 存币数量
+                obj.receiveCoinAmt = this.shouNumber; // 接收币数量
+                obj.receiveSwftAmt = this.swft_fee; // swft手续费
+                obj.destinationAddr = obj['equipmentNo']; //收到的数字资产的地址
+                obj.refundAddr = this.refundAddr;
+                this.postAjax(url, obj).then((res) => {
+                    if (res.resCode === '800') {
+                        let data = res.data;
+                        this.pAddress = data['platformAddr'];
+                        this.orderId = data['orderId'] || '';
+                        this.deposit_fee = data['depositCoinFeeAmt'] || '';
+                        this.orderState = data['orderState'] || '';
+                        this.sTime1 = setInterval(() => {
+                            this.orderList(this.orderId);
+                        }, 1000);
+                    } else {
+                        this.toast(this.curLangule['error2']);
+                    }
+                }).catch(() => {
+
+                });
+            },
+            doCopy(text) {
+                var v = this;
+                this.$copyText(text).then(function(e) {
+                    v.toast(v.curLangule['key15']);
+                }, function(e) {})
+            },
+            getBaseInfo() {
+                let url = this.baseUrl + 'api/v1/getBaseInfo';
+                let obj = {
+                    "depositCoinCode": this.depositCoinCode,
+                    "receiveCoinCode": this.receiveCoinCode
+                };
+                this.postAjax(url, obj).then((res) => {
+                    if (res.resCode === "800") {
+                        let item = res['data'];
+                        this.depositMax = item['depositMax'];
+                        this.depositMin = item['depositMin'];
+                        this.instantRate = item['instantRate'];
+                        let receiveCoinFee = parseFloat(item["receiveCoinFee"]);
+                        let total = this.accAdd(this.shouNumber, receiveCoinFee);
+                        this.payNumber = this.accDivCoupon(total, this.instantRate).toFixed(6);
+                        this.swft_fee = this.accMul(this.payNumber, 0.002).toFixed(8);
+                        this.payNumber = this.accAdd(this.swft_fee, this.payNumber).toFixed(6);
+                    }
+                }).catch((err) => {
+
+                });
+            },
+            chooseCoin() {
+                this.depositCoinCode = this.selectCoin;
+                if (this.depositCoinCode != this.receiveCoinCode) {
+                    this.pAddress = '';
+                    this.refundAddr = '';
+                    this.getBaseInfo();
+                } else {
+                    clearInterval(this.sTime1);
+                    this.payNumber = this.shouNumber;
+                    this.pAddress = this.exartParms['equipmentNo'];
+                }
+            },
+            /***
+             * 除法，获取精确乘法的结果值
+             * @param arg1
+             * @param arg2
+             * @returns
+             */
+            accDivCoupon(arg1, arg2) {
+                var t1 = 0,
+                    t2 = 0,
+                    r1, r2;
+                try {
+                    t1 = arg1.toString().split(".")[1].length;
+                } catch (e) {}
+                try {
+                    t2 = arg2.toString().split(".")[1].length;
+                } catch (e) {}
+                with(Math) {
+                    r1 = Number(arg1.toString().replace(".", ""));
+                    r2 = Number(arg2.toString().replace(".", ""));
+                    return (r1 / r2) * pow(10, t2 - t1);
+                }
+            },
+            accAdd(arg1, arg2) {
+                var r1, r2, m;
+                try {
+                    r1 = arg1.toString().split(".")[1].length
+                } catch (e) {
+                    r1 = 0
+                };
+                try {
+                    r2 = arg2.toString().split(".")[1].length
+                } catch (e) {
+                    r2 = 0
+                };
+                m = Math.pow(10, Math.max(r1, r2));
+                return (arg1 * m + arg2 * m) / m;
+            },
+            accMul(arg1, arg2) {
+                var m = 0,
+                    s1 = arg1.toString(),
+                    s2 = arg2.toString();
+                try {
+                    m += s1.split(".")[1].length
+                } catch (e) {};
+                try {
+                    m += s2.split(".")[1].length
+                } catch (e) {};
+                return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m);
+            },
+            isSupportAdvanced() {
+                if (this.refundAddr === "") {
+                    this.toast(this.curLangule['key11']);
+                    return false;
+                }
+
+                if (this.selectCoin === 'ELA' && !this.isAddressValid(this.refundAddr)) {
+                    this.toast(this.curLangule['error1']);
+                    return false;
+                }
+
+                if (this.selectCoin === 'ETH' && !this.$wAValidator.validate(this.refundAddr, 'ETH')) {
+                    this.toast(this.curLangule['error1']);
+                    return false;
+                }
+
+
+                if (this.selectCoin === 'BTC' && !this.$wAValidator.validate(this.refundAddr, 'BTC')) {
+                    this.toast(this.curLangule['error1']);
+                    return false;
+                }
+
+                if (this.selectCoin === 'USDT(ERC20)' && !this.$wAValidator.validate(this.refundAddr, 'ETH')) {
+                    this.toast(this.curLangule['error1']);
+                    return false;
+                }
+                //let payNumber = this.accAdd(this.deposit_fee, this.payNumber);
+                if (this.payNumber < parseFloat(this.depositMin)) {
+                    this.toast(this.curLangule['key19'] + '(' + this.depositMin + '-' + this.depositMax + ')');
+                    return false;
+                }
+
+                if (this.payNumber > parseFloat(this.depositMax)) {
+                    this.toast(this.curLangule['key20'] + '(' + this.depositMin + '-' + this.depositMax + ')');
+                    return false;
+                }
+
+                if (this.allCoinObj[this.depositCoinCode]['isSupportAdvanced'] === 'N') {
+                    this.toast(this.depositCoinCode + this.curLangule['key18']);
+                    return false;
+                }
+
+                if (this.allCoinObj[this.receiveCoinCode]['isSupportAdvanced'] === 'N') {
+                    this.toast(this.receiveCoinCode + this.curLangule['key18']);
+                    return false;
+                }
+
+                return true;
+            },
+            createWallet() {
+                if (this.isSupportAdvanced()) {
+                    clearInterval(this.sTimer);
+                    this.accountExchange();
+                } else {
+                    console.log("不成功");
+                }
+            },
+            postAjax(url, obj) {
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        data: JSON.stringify(obj),
+                        type: 'POST',
+                        contentType: "application/json",
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+                });
+            },
+            getAjax(url) {
+                return new Promise((resovle, reject) => {
+                    $.ajax({
+                        url: url,
+                        dataType: 'json',
+                        type: 'GET',
+                        success: function(data) { //成功回调函数
+                            resovle(data);
+                        },
+                        error: function(err) { //失败回调函数
+                            reject(err);
+                        }
+                    });
+                });
+            },
+            GetQueryString(name) {　　　
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+                var r = window.location.search.substr(1).match(reg);　　　
+                if (r != null) return (r[2]);　　　
+                return null;
+            },
+            getLanugle: function() {
+                this.curLangule = this.en;
+                this.curLanguleKey = 'en';
+                var JsSrc = (navigator.language || navigator.browserLanguage).toLowerCase();
+                if (JsSrc.indexOf('zh') >= 0) {
+                    // 假如浏览器语言是中文
+                    this.curLanguleKey = 'zh';
+                    this.curLangule = this.zh;
+                } else if (JsSrc.indexOf('en') >= 0) {
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                } else {
+                    // 假如浏览器语言是其它语言
+                    this.curLangule = this.en;
+                    this.curLanguleKey = 'en';
+                }
+            },
+            toast(str) {
+                var v = this;
+                v.toastText = str
+                v.toastShow = true
+                setTimeout(function() {
+                    v.toastShow = false
+                }, 1500)
+            }
+        },
+        created() {
+            this.getLanugle();
+            this.frameType = this.GetQueryString("browser") || "";
+            this.codes = {
+                "USDT(ERC20)": {
+                    name: "USDT(ERC20)"
+                },
+                "ELA": {
+                    name: "ELA"
+                },
+                "ETH": {
+                    name: "ETH"
+                },
+                "BTC": {
+                    name: "BTC"
+                }
+            };
+            this.getCoinList();
+        },
+        mounted() {
+            this.wd = this.GetQueryString('wd');
+            this.ffee = this.GetQueryString('ffee') || '';
+            this.wbNumebr = this.GetQueryString('wbNumber');
+            this.shouNumber = this.GetQueryString('payNumber');
+            this.payNumber = this.GetQueryString('payNumber');
+            this.rAddress = this.GetQueryString('rAddress');
+            this.pAddress = this.rAddress;
+            this.exartParms['equipmentNo'] = this.rAddress;
+            this.rcoin = decodeURIComponent(this.GetQueryString('rcoin'));
+            this.depositCoinCode = this.rcoin;
+            this.selectCoin = this.rcoin;
+            this.receiveCoinCode = this.rcoin;
+            this.sTimer = setInterval(() => {
+                if (this.depositCoinCode != this.receiveCoinCode) {
+                    this.pAddress = "";
+                    this.getBaseInfo();
+                }
+            }, 1000);
+        }
+    });
+</script>
+
+</html>
