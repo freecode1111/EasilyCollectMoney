@@ -386,7 +386,6 @@
             priceObj: {},
             rAddress: '',
             payNumber: "",
-            feeNumber: '',
             wbNumber: '',
             rcoin: '',
             pAddress: '',
@@ -477,11 +476,7 @@
             if (baseUrl === "file://") {
                 baseUrl = 'http://dev1.elapps.net';
             }
-            if (this.ffee != "") {
-                this.qrCode = baseUrl + "/pay.html?wd=" + this.wd + '&wbNumber=' + this.wbNumber + '&ffee=' + this.feeNumber + "&payNumber=" + this.payNumber + '&rAddress=' + this.rAddress + '&rcoin=' + this.rcoin + '&browser=' + this.frameType;
-            } else {
-                this.qrCode = baseUrl + "/pay.html?wd=" + this.wd + '&wbNumber=' + this.wbNumber + "&payNumber=" + this.payNumber + '&rAddress=' + this.rAddress + '&rcoin=' + this.rcoin + '&browser=' + this.frameType;
-            }
+            this.qrCode = baseUrl + "/pay.html?wd=" + this.wd + '&wbNumber=' + this.wbNumber + "&payNumber=" + this.payNumber + '&rAddress=' + this.rAddress + '&rcoin=' + this.rcoin + '&browser=' + this.frameType;
         }
     });
 </script>
