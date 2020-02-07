@@ -830,6 +830,13 @@
             this.frameType = this.GetQueryString("browser") || "";
             if (this.frameType != 'trinity') {
                 this.elaphant();
+            } else {
+                this.codes = {
+                    "ELA": {
+                        name: "ELA"
+                    }
+                };
+                this.selectCoin = 'ELA';
             }
             localStorage.setItem("frameTypeObj", JSON.stringify({
                 frameType: this.frameType
