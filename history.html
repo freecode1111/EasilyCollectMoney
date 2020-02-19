@@ -171,6 +171,7 @@
         data: {
             loading: true,
             zh: {
+                title: '简单收款',
                 "status_exchangeing": "兑换中",
                 "status_timeout": "超时",
                 "status_refunding": "兑换失败，退币中...",
@@ -183,6 +184,7 @@
                 key10: '复制成功',
             },
             en: {
+                title: 'easyTrade',
                 "status_exchangeing": "Exchange in progress",
                 "status_timeout": "Timeout",
                 "status_refunding": "Failed to exchange, refund in progress....",
@@ -299,6 +301,7 @@
         },
         created() {
             this.getLanugle();
+            document.title = this.curLangule["title"];
             this.exartParms["equipmentNo"] = this.GetQueryString('equipmentNo');
             let url = this.baseUrl + '/api/v2/ios/queryAllTradeV3';
             this.postAjax(url, this.exartParms).then((res) => {

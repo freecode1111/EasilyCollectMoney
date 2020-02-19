@@ -433,6 +433,7 @@
         data: {
             loading: true,
             zh: {
+                title: '简单收款',
                 key: '法币:',
                 key1: '数字加密货币:',
                 key2: '付款方式:',
@@ -458,6 +459,7 @@
                 error2: '稍后重试',
             },
             en: {
+                title: 'easyTrade',
                 key: 'Fiat:',
                 key1: 'Cryptocurrency:',
                 key2: 'Pay by:',
@@ -894,6 +896,7 @@
         },
         created() {
             this.getLanugle();
+            document.title = this.curLangule["title"];
             this.frameType = this.GetQueryString("browser") || "";
             this.codes = {
                 "USDT(ERC20)": {

@@ -361,6 +361,7 @@
         data: {
             loading: false,
             zh: {
+                title: '简单收款',
                 key: '法币:',
                 key1: '数字加密货币:',
                 key4: '扫描二维码支付',
@@ -370,6 +371,7 @@
                 key15: '分享支付'
             },
             en: {
+                title: 'easyTrade',
                 key: 'Fiat:',
                 key1: 'Cryptocurrency:',
                 key4: 'Scan QR code payment',
@@ -451,6 +453,7 @@
         },
         created() {
             this.getLanugle();
+            document.title = this.curLangule["title"];
             let objstr = localStorage.getItem("frameTypeObj") || "";
             if (objstr != "") {
                 this.frameType = JSON.parse(objstr)["frameType"];

@@ -415,6 +415,7 @@
         data: {
             loading: true,
             zh: {
+                title: '简单收款',
                 key: '人民币',
                 key1: '美元',
                 key2: '法币',
@@ -433,6 +434,7 @@
                 key10: '加密货币'
             },
             en: {
+                title: 'easyTrade',
                 key: 'CNY',
                 key1: 'USD',
                 key2: 'Fiat',
@@ -865,6 +867,7 @@
                 frameType: this.frameType
             }));
             this.getLanugle();
+            document.title = this.curLangule["title"];
             this.getAjax('https://api-price.elaphant.app/api/1/cmc?limit=200').then((res) => {
                 this.priceObj = _.keyBy(res, 'symbol');
                 this.loading = false;
