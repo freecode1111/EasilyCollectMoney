@@ -540,10 +540,33 @@
 
                 return url.substring(0, url.length - 1);
             },
+            isPC() {
+                var userAgentInfo = navigator.userAgent;
+                var Agents = ["Android", "iPhone",
+                    "SymbianOS", "Windows Phone",
+                    "iPad", "iPod"
+                ];
+                var flag = true;
+                for (var v = 0; v < Agents.length; v++) {
+                    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                        flag = false;
+                        break;
+                    }
+                }
+                return flag;
+            },
+            isWechat() {
+                var ua = navigator.userAgent.toLowerCase();
+                return /micromessenger/i.test(ua) || typeof navigator.wxuserAgent !== 'undefined';
+            },
             getNext() {
                 let eleUrl = this.goAuth();
-                let callUrl = "https://launch.elaphant.app?appName=Easy Trade&appTitle=Easy Trade&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
-                location.href = callUrl;
+                if (this.isPC() || this.isWechat()) {
+                    let callUrl = "https://launch.elaphant.app?appName=Easy Trade&appTitle=Easy Trade&autoRedirect=True&redirectURL=" + encodeURIComponent(eleUrl);
+                    location.href = callUrl;
+                } else {
+                    location.href = eleUrl;
+                }
             },
             GetQueryString(name) {　　　
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
