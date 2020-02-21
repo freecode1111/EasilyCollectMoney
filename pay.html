@@ -582,7 +582,7 @@
                     }
                     url += key + '=' + val + '&';
                 });
-                if (this.isPc() || this.isWechat()) {
+                if (this.isPC() || this.isWechat()) {
                     var turl = 'https://launch.elaphant.app/?appName=Easy Trade&autoRedirect=True&appTitle=Easy Trade&redirectURL=' + encodeURIComponent(url);
                     location.href = turl;
                 } else {
